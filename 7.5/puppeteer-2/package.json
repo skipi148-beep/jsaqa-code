@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
+   "scripts": {
     "test": "jest",
-    "cucumber": "cucumber-js"
+    "test:cucumber": "cucumber-js features/search.feature --require features/step_definitions/search.steps.js"
   },
+
+
   "author": "",
   "license": "ISC",
   "dependencies": {

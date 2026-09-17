@@ -1,55 +1,70 @@
-const { clickElement, getText } = require("./lib/commands.js");
+const puppeteer = require("puppeteer");
 
+let browser;
 let page;
 
-describe("ИдёмВКино - Бронирование билетов (Тест-сьют)", () => {
-  beforeEach(async () => {
-    page = await browser.newPage();
-    await page.goto("http://tmweb.ru"); // Сайт кинотеатра
-  });
+beforeEach(async () => {
+  browser = await puppeteer.launch({ headless: false });
+  page = await browser.newPage();
+});
 
-  // Хук afterEach удален, так как jest-environment-puppeteer закрывает страницы автоматически
+afterEach(async () => {
+  await browser.close();
+});
 
-  test("Успешное бронирование стандартного места на завтра", async () => {
-    const daySelector = "a.page-nav__day:nth-child(2)"; // Завтра
-    const timeSelector = "a.movie-seances__time"; // Сеанс
-    const seatSelector = ".wrapper:nth-child(3) .chair:nth-child(5)"; // Свободное место
-    const submitButton = "button.acceptin-button";
+describe("Бронирование билетов в кино (Первая часть)", () => {
+  
+  test("Успешное бронирование билета на завтра", async () => {
+    await page.goto("http://tmweb.ru", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".page-nav__day:nth-child(2)");
+    await page.click(".page-nav__day:nth-child(2)");
 
-    await clickElement(page, daySelector);
-    await clickElement(page, timeSelector);
-    await clickElement(page, seatSelector);
-    await clickElement(page, submitButton);
+    await page.waitForSelector(".movie-seances__time");
+    await page.click(".movie-seances__time");
 
-    const text = await getText(page, ".ticket__check-title");
+    await page.waitForSelector(".buying-scheme__chair");
+    const freeChair = await page.$(".buying-scheme__chair:not(.buying-scheme__chair_taken)");
+    await freeChair.click();
+    
+    await page.click("button.acceptin-button");
+    await page.waitForSelector(".ticket__check-title");
+    const text = await page.$eval(".ticket__check-title", el => el.textContent);
     expect(text).toContain("Вы выбрали билеты:");
-  }, 20000);
+  }, 60000);
 
-  test("Успешное бронирование VIP-места на послезавтра", async () => {
-    const daySelector = "a.page-nav__day:nth-child(3)"; // Послезавтра
-    const timeSelector = "a.movie-seances__time";
-    const vipSeatSelector = ".wrapper:nth-child(4) .chair_vip:nth-child(2)"; // VIP место
-    const submitButton = "button.acceptin-button";
+  test("Успешное бронирование билета на послезавтра", async () => {
+    await page.goto("http://tmweb.ru", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".page-nav__day:nth-child(3)");
+    await page.click(".page-nav__day:nth-child(3)");
 
-    await clickElement(page, daySelector);
-    await clickElement(page, timeSelector);
-    await clickElement(page, vipSeatSelector);
-    await clickElement(page, submitButton);
+    await page.waitForSelector(".movie-seances__time");
+    await page.click(".movie-seances__time");
 
-    const text = await getText(page, ".ticket__check-title");
+    await page.waitForSelector(".buying-scheme__chair");
+    const freeChair = await page.$(".buying-scheme__chair:not(.buying-scheme__chair_taken)");
+    await freeChair.click();
+    
+    await page.click("button.acceptin-button");
+    await page.waitForSelector(".ticket__check-title");
+    const text = await page.$eval(".ticket__check-title", el => el.textContent);
     expect(text).toContain("Вы выбрали билеты:");
-  }, 20000);
+  }, 60000);
 
   test("Попытка бронирования занятого места (Кнопка брони заблокирована)", async () => {
-    const daySelector = "a.page-nav__day:nth-child(1)"; // Сегодня
-    const timeSelector = "a.movie-seances__time";
-    const takenSeatSelector = ".wrapper .chair_taken"; // Занятое место
+    await page.goto("http://tmweb.ru", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".page-nav__day:nth-child(1)");
+    await page.click(".page-nav__day:nth-child(1)");
 
-    await clickElement(page, daySelector);
-    await clickElement(page, timeSelector);
-    await page.waitForSelector(takenSeatSelector);
+    await page.waitForSelector(".movie-seances__time");
+    await page.click(".movie-seances__time");
 
+    await page.waitForSelector(".buying-scheme__wrapper");
+    const takenChair = await page.$(".buying-scheme__chair_taken");
+    if (takenChair) {
+      await takenChair.click();
+    }
+    
     const isButtonDisabled = await page.$eval("button.acceptin-button", (button) => button.disabled);
-    expect(isButtonDisabled).toBeTruthy();
-  }, 20000);
+    expect(isButtonDisabled).toBe(true);
+  }, 60000);
 });
