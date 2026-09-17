@@ -1,1 +1,10 @@
-{ "validUser": { "email": "qamid@qamid.ru", "password": "qamid" }, "invalidUser": { "email": "wrong@test.com", "password": "wrongpassword" } }
+{
+  "happyPath": {
+    "email": "qamid@qamid.ru",
+    "password": "qamid"
+  },
+  "sadPath": {
+    "email": "invalid_user@mail.ru",
+    "password": "wrong_password"
+  }
+}
