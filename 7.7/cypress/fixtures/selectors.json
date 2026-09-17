@@ -1,0 +1,18 @@
+{
+  "client": {
+    "title": ".page-header__title",
+    "days": "a.page-nav__day",
+    "movieSections": "section.movie",
+    "seanceTime": "a.movie-seances__time",
+    "selectedSeat": ".wrapper .chair_selected",
+    "acceptButton": "button.acceptin-button",
+    "ticketTitle": ".ticket__check-title"
+  },
+  "admin": {
+    "loginInput": "input[type='email']",
+    "passwordInput": "input[type='password']",
+    "submitButton": "input[type='submit']",
+    "hallManagement": "#hall-management",
+    "errorMessage": "body"
+  }
+}

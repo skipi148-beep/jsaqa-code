@@ -1,0 +1,11 @@
+# Зависимости (тяжелая папка с библиотеками)
+node_modules/
+
+# Локальный файл с вашими реальными паролями
+user.js
+
+# Отчёты о прохождении тестов Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.local-browsers/
